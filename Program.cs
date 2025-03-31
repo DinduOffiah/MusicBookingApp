@@ -1,4 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MusicBookingApp.Data;
+using MusicBookingApp.Models;
+using MusicBookingApp.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
