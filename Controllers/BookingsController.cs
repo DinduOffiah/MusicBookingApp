@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBookingApp.Data;
@@ -38,17 +39,33 @@ namespace MusicBookingApp.Controllers
             return booking;
         }
 
-        // POST: api/bookings
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Booking>> CreateBooking(Booking booking)
+        public async Task<ActionResult<Booking>> CreateBooking(CreateBookingDto dto)
         {
-            booking.BookingDate = DateTime.Now;
+            var evt = await _context.Events.FindAsync(dto.EventId);
+            if (evt == null)
+            {
+                return BadRequest("Event with the provided ID does not exist.");
+            }
+
+            var booking = new Booking
+            {
+                EventId = dto.EventId,  
+                CustomerName = dto.CustomerName,
+                CustomerEmail = dto.CustomerEmail,
+                Amount = dto.Amount,
+                BookingDate = DateTime.Now
+            };
+
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetBooking), new { id = booking.BookingId }, booking);
         }
 
+
         // PUT: api/bookings/{id}
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBooking(int id, Booking booking)
         {
@@ -69,6 +86,7 @@ namespace MusicBookingApp.Controllers
         }
 
         // DELETE: api/bookings/{id}
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBooking(int id)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBookingApp.Data;
@@ -33,16 +34,33 @@ namespace MusicBookingApp.Controllers
             return evt;
         }
 
-        // POST: api/events
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<Event>> CreateEvent(Event evt)
+        public async Task<ActionResult<Event>> CreateEvent(CreateEventDto dto)
         {
+            var artist = await _context.Artists.FindAsync(dto.ArtistId);
+            if (artist == null)
+            {
+                return BadRequest("Artist with the provided id does not exist.");
+            }
+
+            var evt = new Event
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                Venue = dto.Venue,
+                EventDate = dto.EventDate,
+                ArtistId = dto.ArtistId  // Only set the foreign key.
+            };
+
             _context.Events.Add(evt);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetEvent), new { id = evt.EventId }, evt);
         }
 
+
         // PUT: api/events/{id}
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvent(int id, Event evt)
         {
@@ -63,6 +81,7 @@ namespace MusicBookingApp.Controllers
         }
 
         // DELETE: api/events/{id}
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(int id)
         {

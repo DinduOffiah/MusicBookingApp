@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MusicBookingApp.Data;
@@ -33,6 +34,7 @@ namespace MusicBookingApp.Controllers
         }
 
         // POST: api/artists
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Artist>> CreateArtist(Artist artist)
         {
@@ -42,6 +44,7 @@ namespace MusicBookingApp.Controllers
         }
 
         // PUT: api/artists/{id}
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArtist(int id, Artist artist)
         {
@@ -62,6 +65,7 @@ namespace MusicBookingApp.Controllers
         }
 
         // DELETE: api/artists/{id}
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArtist(int id)
         {
